@@ -1,0 +1,930 @@
+{
+	"info": {
+		"_postman_id": "service-marketplace-api",
+		"name": "Service Marketplace Platform API",
+		"description": "Complete API collection for testing the Service Marketplace Platform backend",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{access_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000/api",
+			"type": "string"
+		},
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "refresh_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "user_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "service_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "request_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "problem_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "provider_profile_id",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register Regular User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set('user_id', jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"user@example.com\",\n    \"password\": \"SecurePass123!\",\n    \"first_name\": \"John\",\n    \"last_name\": \"Doe\",\n    \"role\": \"REGULAR\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/register/regular/",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "register", "regular", ""]
+						},
+						"description": "Register a new regular user account"
+					},
+					"response": []
+				},
+				{
+					"name": "Register Service Provider",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set('user_id', jsonData.id);",
+									"    pm.environment.set('provider_profile_id', jsonData.provider_profile.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"provider@example.com\",\n    \"password\": \"SecurePass123!\",\n    \"first_name\": \"Jane\",\n    \"last_name\": \"Smith\",\n    \"role\": \"PROVIDER\",\n    \"service_description\": \"I provide plumbing and electrical services with 10 years of experience.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/register/provider/",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "register", "provider", ""]
+						},
+						"description": "Register a new service provider account (requires admin approval)"
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set('access_token', jsonData.access);",
+									"    pm.environment.set('refresh_token', jsonData.refresh);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"user@example.com\",\n    \"password\": \"SecurePass123!\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login/",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "login", ""]
+						},
+						"description": "Login with email and password to get JWT tokens"
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set('access_token', jsonData.access);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"refresh\": \"{{refresh_token}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/token/refresh/",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "token", "refresh", ""]
+						},
+						"description": "Refresh access token using refresh token"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current User",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/auth/me/",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "me", ""]
+						},
+						"description": "Get current authenticated user profile"
+					},
+					"response": []
+				},
+				{
+					"name": "Change Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"current_password\": \"SecurePass123!\",\n    \"new_password\": \"NewSecurePass456!\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/password/change/",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "password", "change", ""]
+						},
+						"description": "Change user password"
+					},
+					"response": []
+				}
+			],
+			"description": "Authentication and user management endpoints"
+		},
+		{
+			"name": "Provider Management (Admin)",
+			"item": [
+				{
+					"name": "List Provider Applications",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/auth/providers/applications/?status=PENDING",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "providers", "applications", ""],
+							"query": [
+								{
+									"key": "status",
+									"value": "PENDING",
+									"description": "Filter by status: PENDING, APPROVED, REJECTED"
+								}
+							]
+						},
+						"description": "List all provider applications (Admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Approve Provider",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/providers/applications/{{provider_profile_id}}/approve/",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "providers", "applications", "{{provider_profile_id}}", "approve", ""]
+						},
+						"description": "Approve a provider application (Admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Reject Provider",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/providers/applications/{{provider_profile_id}}/reject/",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "providers", "applications", "{{provider_profile_id}}", "reject", ""]
+						},
+						"description": "Reject a provider application (Admin only)"
+					},
+					"response": []
+				}
+			],
+			"description": "Provider approval management (Admin only)"
+		},
+		{
+			"name": "Services",
+			"item": [
+				{
+					"name": "List Services",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/services/?search=plumbing&location=New York&min_cost=50&max_cost=200",
+							"host": ["{{base_url}}"],
+							"path": ["services", ""],
+							"query": [
+								{
+									"key": "search",
+									"value": "plumbing",
+									"description": "Search by name or description"
+								},
+								{
+									"key": "location",
+									"value": "New York",
+									"description": "Filter by location"
+								},
+								{
+									"key": "min_cost",
+									"value": "50",
+									"description": "Minimum cost filter"
+								},
+								{
+									"key": "max_cost",
+									"value": "200",
+									"description": "Maximum cost filter"
+								}
+							]
+						},
+						"description": "List all active services with optional filters"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Service",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set('service_id', jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Professional Plumbing Services\",\n    \"description\": \"Expert plumbing repairs, installations, and maintenance. Available 24/7 for emergencies.\",\n    \"location\": \"New York, NY\",\n    \"cost\": 150.00\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/services/",
+							"host": ["{{base_url}}"],
+							"path": ["services", ""]
+						},
+						"description": "Create a new service (Provider only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Service Detail",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/services/{{service_id}}/",
+							"host": ["{{base_url}}"],
+							"path": ["services", "{{service_id}}", ""]
+						},
+						"description": "Get detailed information about a specific service"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Service",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Professional Plumbing Services - Updated\",\n    \"description\": \"Expert plumbing repairs, installations, and maintenance. Available 24/7 for emergencies. Now with 20% discount!\",\n    \"location\": \"New York, NY\",\n    \"cost\": 120.00\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/services/{{service_id}}/",
+							"host": ["{{base_url}}"],
+							"path": ["services", "{{service_id}}", ""]
+						},
+						"description": "Update a service (Provider only, own services)"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Service",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/services/{{service_id}}/",
+							"host": ["{{base_url}}"],
+							"path": ["services", "{{service_id}}", ""]
+						},
+						"description": "Delete a service (Provider only, own services)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Services",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/services/my-services/",
+							"host": ["{{base_url}}"],
+							"path": ["services", "my-services", ""]
+						},
+						"description": "Get all services created by the authenticated provider"
+					},
+					"response": []
+				}
+			],
+			"description": "Service management endpoints"
+		},
+		{
+			"name": "Service Requests",
+			"item": [
+				{
+					"name": "List Service Requests",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/requests/?status=PENDING",
+							"host": ["{{base_url}}"],
+							"path": ["requests", ""],
+							"query": [
+								{
+									"key": "status",
+									"value": "PENDING",
+									"description": "Filter by status: PENDING, ACCEPTED, REJECTED, COMPLETED"
+								}
+							]
+						},
+						"description": "List service requests (filtered by user role)"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Service Request",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set('request_id', jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": {{service_id}},\n    \"message\": \"I need plumbing services for a leaking pipe in my kitchen. When can you come?\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/requests/",
+							"host": ["{{base_url}}"],
+							"path": ["requests", ""]
+						},
+						"description": "Create a new service request (Regular User only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Service Request Detail",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/requests/{{request_id}}/",
+							"host": ["{{base_url}}"],
+							"path": ["requests", "{{request_id}}", ""]
+						},
+						"description": "Get detailed information about a specific service request"
+					},
+					"response": []
+				},
+				{
+					"name": "Accept Service Request",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}/requests/{{request_id}}/accept/",
+							"host": ["{{base_url}}"],
+							"path": ["requests", "{{request_id}}", "accept", ""]
+						},
+						"description": "Accept a service request (Provider only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Reject Service Request",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}/requests/{{request_id}}/reject/",
+							"host": ["{{base_url}}"],
+							"path": ["requests", "{{request_id}}", "reject", ""]
+						},
+						"description": "Reject a service request (Provider only)"
+					},
+					"response": []
+				}
+			],
+			"description": "Service request management endpoints"
+		},
+		{
+			"name": "Problem Reports",
+			"item": [
+				{
+					"name": "List Problem Reports",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/problems/",
+							"host": ["{{base_url}}"],
+							"path": ["problems", ""]
+						},
+						"description": "List all problem reports for the authenticated user"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Problem Report (Text)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set('problem_id', jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"input_type\": \"TEXT\",\n    \"problem_text\": \"My kitchen sink is leaking and water is pooling under the cabinet. I think the pipe connection is loose.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/problems/create/",
+							"host": ["{{base_url}}"],
+							"path": ["problems", "create", ""]
+						},
+						"description": "Submit a problem report with text input (gets AI recommendations)"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Problem Report (Voice)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set('problem_id', jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "input_type",
+									"value": "VOICE",
+									"type": "text"
+								},
+								{
+									"key": "audio_file",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/problems/create/",
+							"host": ["{{base_url}}"],
+							"path": ["problems", "create", ""]
+						},
+						"description": "Submit a problem report with voice input (transcribed and gets AI recommendations)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Problem Report Detail",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/problems/{{problem_id}}/",
+							"host": ["{{base_url}}"],
+							"path": ["problems", "{{problem_id}}", ""]
+						},
+						"description": "Get detailed information about a problem report including AI recommendations"
+					},
+					"response": []
+				}
+			],
+			"description": "Problem reporting with AI recommendations"
+		},
+		{
+			"name": "Analytics (Admin)",
+			"item": [
+				{
+					"name": "Dashboard Metrics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/analytics/dashboard/",
+							"host": ["{{base_url}}"],
+							"path": ["analytics", "dashboard", ""]
+						},
+						"description": "Get overall dashboard metrics (Admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "User Registration Stats",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/analytics/users/registrations/?start_date=2024-01-01&end_date=2024-12-31",
+							"host": ["{{base_url}}"],
+							"path": ["analytics", "users", "registrations", ""],
+							"query": [
+								{
+									"key": "start_date",
+									"value": "2024-01-01",
+									"description": "Start date (YYYY-MM-DD)"
+								},
+								{
+									"key": "end_date",
+									"value": "2024-12-31",
+									"description": "End date (YYYY-MM-DD)"
+								}
+							]
+						},
+						"description": "Get user registration statistics (Admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Service Request Stats",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/analytics/requests/stats/?start_date=2024-01-01&end_date=2024-12-31",
+							"host": ["{{base_url}}"],
+							"path": ["analytics", "requests", "stats", ""],
+							"query": [
+								{
+									"key": "start_date",
+									"value": "2024-01-01"
+								},
+								{
+									"key": "end_date",
+									"value": "2024-12-31"
+								}
+							]
+						},
+						"description": "Get service request statistics (Admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Provider Activity Stats",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/analytics/providers/activity/?start_date=2024-01-01&end_date=2024-12-31",
+							"host": ["{{base_url}}"],
+							"path": ["analytics", "providers", "activity", ""],
+							"query": [
+								{
+									"key": "start_date",
+									"value": "2024-01-01"
+								},
+								{
+									"key": "end_date",
+									"value": "2024-12-31"
+								}
+							]
+						},
+						"description": "Get provider activity statistics (Admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Search Users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/analytics/users/search/?search=john&role=REGULAR&is_active=true",
+							"host": ["{{base_url}}"],
+							"path": ["analytics", "users", "search", ""],
+							"query": [
+								{
+									"key": "search",
+									"value": "john",
+									"description": "Search by name or email"
+								},
+								{
+									"key": "role",
+									"value": "REGULAR",
+									"description": "Filter by role"
+								},
+								{
+									"key": "is_active",
+									"value": "true",
+									"description": "Filter by active status"
+								}
+							]
+						},
+						"description": "Search and filter users (Admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Search Providers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/analytics/providers/search/?search=plumbing&approval_status=APPROVED",
+							"host": ["{{base_url}}"],
+							"path": ["analytics", "providers", "search", ""],
+							"query": [
+								{
+									"key": "search",
+									"value": "plumbing"
+								},
+								{
+									"key": "approval_status",
+									"value": "APPROVED"
+								}
+							]
+						},
+						"description": "Search and filter providers (Admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Search Requests",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/analytics/requests/search/?status=PENDING&start_date=2024-01-01",
+							"host": ["{{base_url}}"],
+							"path": ["analytics", "requests", "search", ""],
+							"query": [
+								{
+									"key": "status",
+									"value": "PENDING"
+								},
+								{
+									"key": "start_date",
+									"value": "2024-01-01"
+								}
+							]
+						},
+						"description": "Search and filter service requests (Admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Export Data to CSV",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/analytics/export/?data_type=users&start_date=2024-01-01&end_date=2024-12-31",
+							"host": ["{{base_url}}"],
+							"path": ["analytics", "export", ""],
+							"query": [
+								{
+									"key": "data_type",
+									"value": "users",
+									"description": "Type: users, providers, requests, services"
+								},
+								{
+									"key": "start_date",
+									"value": "2024-01-01"
+								},
+								{
+									"key": "end_date",
+									"value": "2024-12-31"
+								}
+							]
+						},
+						"description": "Export platform data to CSV (Admin only)"
+					},
+					"response": []
+				}
+			],
+			"description": "Analytics and reporting endpoints (Admin only)"
+		}
+	]
+}
